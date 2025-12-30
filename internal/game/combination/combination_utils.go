@@ -52,3 +52,29 @@ func FindMaxSubSequence(sequence []Rank) ([]Rank, bool) {
 
 	return nil, false
 }
+
+// Функция поиска максимального кика
+func findMaxKicker(cards map[Rank]int, excludeRank Rank) Rank {
+	maxKicker := Rank(0)
+
+	for rank := range cards {
+		if rank == excludeRank {
+			continue
+		}
+
+		if rank > maxKicker {
+			maxKicker = rank
+		}
+	}
+
+	return maxKicker
+}
+
+func isStreetRow(row []Card) bool {
+	for i := 0; i < len(row)-1; i++ {
+		if row[i+1].Rank != row[i].Rank+1 {
+			return false
+		}
+	}
+	return true
+}

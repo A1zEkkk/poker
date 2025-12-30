@@ -1,7 +1,9 @@
 package game
 
 import (
+	"fmt"
 	"math/rand"
+	. "pokergame/internal/game/combination"
 	. "pokergame/internal/game/types"
 	"time"
 )
@@ -21,7 +23,7 @@ func (g *Game) GetDeck() { //Генерация колоды
 
 	for r := Two; r <= Ace; r++ {
 		for s := Spides; s <= Clubs; s++ {
-			g.Deck = append(g.Deck, Card{r, s})
+			g.Deck = append(g.Deck, Card{Rank: r, Suit: s})
 		}
 	}
 }
@@ -34,6 +36,10 @@ func (g *Game) ShuffleDeck() { //Перемешивание карт
 		j := r.Intn(i + 1)
 		g.Deck[i], g.Deck[j] = g.Deck[j], g.Deck[i]
 	}
+
+	fmt.Println("-------------------------------------------")
+	fmt.Printf("Игровая колода: %v \n", g.Deck)
+	fmt.Println("-------------------------------------------")
 }
 
 func (g *Game) GiveCardToHand() { // Раздача карт по рукам
@@ -43,7 +49,10 @@ func (g *Game) GiveCardToHand() { // Раздача карт по рукам
 			card := g.Deck[lastIndex]
 			g.Players[i].Hand = append(g.Players[i].Hand, card)
 			g.Deck = g.Deck[:lastIndex]
+
+			fmt.Printf("Игрок id: %v \n получил карту на руку: %v \n", g.Players[i].Id, card)
 		}
+		fmt.Println("-------------------------------------------")
 	}
 }
 
@@ -55,7 +64,6 @@ func (g *Game) DealBoard() { // Логика раздачи карт сжига�
 	switch len(g.CommunityCard) {
 	case 0:
 		DealFlop(g)
-
 	case 3:
 		DealTurn(g)
 
@@ -67,12 +75,41 @@ func (g *Game) DealBoard() { // Логика раздачи карт сжига�
 	}
 }
 
-// func (g *Game) GetWinners() {
-// 	winner := make([]User, 0)
-// 	board := make([]Card, 0)
-// 	for _, i := range g.Players {
-// 		board = g.CommunityCard
-// 		muck := append(board, i.Hand...) Нужно сделать сортировку, что бы не делать в каждой ф-ции
-// 	}
+func (g *Game) GetWinners() {
+	muck := make([]Card, 0)
+	for i := range g.Players {
+		muck = nil
+		muck = append(muck, g.Players[i].Hand...)
+		muck = append(muck, g.CommunityCard...)
+		SortMock(muck)
+		fmt.Printf("Hand + board: %v \n", muck)
 
-// }
+		// Нахожденией лучшей комбинации для каждого пользователя
+
+		if ok, с := IsRoyalFlush(muck); ok {
+			g.Players[i].WinComb = с
+		} else if ok, с := IsStreetFlush(muck); ok {
+			g.Players[i].WinComb = с
+		} else if ok, с := IsQuads(muck); ok {
+			g.Players[i].WinComb = с
+		} else if ok, c := IsFullHouse(muck); ok {
+			g.Players[i].WinComb = c
+		} else if ok, с := IsFlush(muck); ok {
+			g.Players[i].WinComb = с
+		} else if ok, с := IsStreet(muck); ok {
+			g.Players[i].WinComb = с
+		} else if ok, с := IsSet(muck); ok {
+			g.Players[i].WinComb = с
+		} else if ok, с := IsTwoPair(muck); ok {
+			g.Players[i].WinComb = с
+		} else if ok, с := IsPair(muck); ok {
+			g.Players[i].WinComb = с
+		} else {
+			_, с := IsHighCard(muck)
+			g.Players[i].WinComb = с
+		}
+
+		fmt.Printf("Win combination: %v \n for user {%v} \n", g.Players[i].WinComb, g.Players[i].Id)
+	}
+
+}

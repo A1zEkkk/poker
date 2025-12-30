@@ -4,9 +4,9 @@ import (
 	. "pokergame/internal/game/types"
 )
 
-func isStreetFlush(muck []Card) ([]Rank, bool) {
+func IsStreetFlush(muck []Card) (bool, HandValue) {
 	if len(muck) < 5 {
-		return nil, false
+		return false, HandValue{}
 	}
 
 	var bestSuit Suit                // лучшая масть
@@ -27,7 +27,7 @@ func isStreetFlush(muck []Card) ([]Rank, bool) {
 	}
 
 	if maxTotal < 5 {
-		return nil, false
+		return false, HandValue{}
 	}
 
 	for _, m := range muck {
@@ -39,8 +39,10 @@ func isStreetFlush(muck []Card) ([]Rank, bool) {
 	SortMyRanks(oneSuitRank)
 
 	maxSubSequence, isFind := FindMaxSubSequence(oneSuitRank)
+	var arrStreetFlush = [5]Rank{}
+	copy(arrStreetFlush[:], maxSubSequence)
 	if isFind {
-		return maxSubSequence, true
+		return true, HandValue{Rank: StraightFlush, Cards: arrStreetFlush}
 	}
-	return nil, false
+	return false, HandValue{}
 }

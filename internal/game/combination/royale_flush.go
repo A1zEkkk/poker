@@ -5,9 +5,9 @@ import (
 	"slices"
 )
 
-func isRoyalFlush(muck []Card) bool { //Флеш рояль
+func IsRoyalFlush(muck []Card) (bool, HandValue) { //Флеш рояль
 	if len(muck) < 5 {
-		return false
+		return false, HandValue{}
 	}
 
 	var bestSuit Suit                                 // лучшая масть
@@ -29,7 +29,7 @@ func isRoyalFlush(muck []Card) bool { //Флеш рояль
 	}
 
 	if maxTotal < 5 {
-		return false
+		return false, HandValue{}
 	}
 
 	for _, m := range muck {
@@ -45,5 +45,8 @@ func isRoyalFlush(muck []Card) bool { //Флеш рояль
 		oneSuitRank = oneSuitRank[trimIndex:]
 	}
 
-	return slices.Equal(royalFlush, oneSuitRank)
+	var arr [5]Rank
+	copy(arr[:], oneSuitRank)
+
+	return slices.Equal(royalFlush, oneSuitRank), HandValue{Rank: RoyalFlush, Cards: arr}
 }
