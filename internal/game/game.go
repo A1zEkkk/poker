@@ -63,19 +63,19 @@ func (g *Game) DealBoard() { // Логика раздачи карт сжига�
 
 	switch len(g.CommunityCard) {
 	case 0:
-		DealFlop(g)
+		dealFlop(g)
 	case 3:
-		DealTurn(g)
+		dealTurn(g)
 
 	case 4:
-		DealRiver(g)
+		dealRiver(g)
 
 	default:
 		return
 	}
 }
 
-func (g *Game) GetWinners() {
+func (g *Game) GetWinners() []User {
 	muck := make([]Card, 0)
 	for i := range g.Players {
 		muck = nil
@@ -96,8 +96,8 @@ func (g *Game) GetWinners() {
 			g.Players[i].WinComb = c
 		} else if ok, с := IsFlush(muck); ok {
 			g.Players[i].WinComb = с
-		} else if ok, с := IsStreet(muck); ok {
-			g.Players[i].WinComb = с
+		} else if ok, c := IsStreet(muck); ok {
+			g.Players[i].WinComb = c
 		} else if ok, с := IsSet(muck); ok {
 			g.Players[i].WinComb = с
 		} else if ok, с := IsTwoPair(muck); ok {
@@ -112,4 +112,57 @@ func (g *Game) GetWinners() {
 		fmt.Printf("Win combination: %v \n for user {%v} \n", g.Players[i].WinComb, g.Players[i].Id)
 	}
 
+	var winners []User
+	maxRank := g.Players[0].WinComb.Rank
+
+	// Шаг 1: находим максимальный ранг комбинации
+	for i := 1; i < len(g.Players); i++ {
+		if g.Players[i].WinComb.Rank > maxRank {
+			maxRank = g.Players[i].WinComb.Rank
+		}
+	}
+
+	// Шаг 2: отбираем всех игроков с этим рангом
+	candidates := []User{}
+	for _, p := range g.Players {
+		if p.WinComb.Rank == maxRank {
+			candidates = append(candidates, p)
+		}
+	}
+
+	// Шаг 3: если один кандидат — он победитель
+	if len(candidates) == 1 {
+		winners = append(winners, candidates[0])
+		return winners
+	}
+
+	// Шаг 4: сравниваем киккеры
+	for i, p := range candidates {
+		if i == 0 {
+			winners = append(winners, p)
+			continue
+		}
+
+		// Сравнение карт по старшинству
+		equal := true
+		for j := 0; j < len(p.WinComb.Cards); j++ {
+			if p.WinComb.Cards[j] > winners[0].WinComb.Cards[j] {
+				// Новый игрок сильнее — заменяем всех
+				winners = []User{p}
+				equal = false
+				break
+			} else if p.WinComb.Cards[j] < winners[0].WinComb.Cards[j] {
+				// Новый игрок слабее — пропускаем
+				equal = false
+				break
+			}
+		}
+
+		if equal {
+			// Киккеры одинаковые — добавляем в список
+			winners = append(winners, p)
+		}
+	}
+
+	return winners
 }

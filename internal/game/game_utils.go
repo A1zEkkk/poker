@@ -7,7 +7,7 @@ import (
 )
 
 // Функция для раздачи первых 3 карт на стол
-func DealFlop(g *Game) {
+func dealFlop(g *Game) {
 	fmt.Println("Dealer deals the flop")
 	fmt.Println("Сожжение карты и раздача 3")
 	burn := len(g.Deck) - 1
@@ -23,7 +23,7 @@ func DealFlop(g *Game) {
 }
 
 // Функция для раздачи 4 карты на стол
-func DealTurn(g *Game) {
+func dealTurn(g *Game) {
 	fmt.Println("Dealer deals the turn")
 	burn := len(g.Deck) - 1
 	fmt.Printf("Сожжена карта: %v\n", g.Deck[burn])
@@ -36,7 +36,7 @@ func DealTurn(g *Game) {
 }
 
 // Функция для раздачи 5 карты на стол
-func DealRiver(g *Game) {
+func dealRiver(g *Game) {
 	fmt.Println("Dealer deals the river")
 	burn := len(g.Deck) - 1
 	fmt.Printf("Сожжена карта: %v\n", g.Deck[burn])
