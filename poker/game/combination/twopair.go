@@ -1,7 +1,7 @@
 package combination
 
 import (
-	. "pokergame/internal/game/types"
+	. "pokergame/poker/game/types"
 )
 
 func IsTwoPair(muck []Card) (bool, HandValue) {

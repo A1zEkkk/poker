@@ -1,7 +1,7 @@
 package combination
 
 import (
-	. "pokergame/internal/game/types"
+	. "pokergame/poker/game/types"
 )
 
 func IsSet(muck []Card) (bool, HandValue) {
