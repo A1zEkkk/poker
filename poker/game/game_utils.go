@@ -71,6 +71,7 @@ func SortMock(mock []Card) {
 	fmt.Println("Карты до сортировки")
 	fmt.Printf("%v\n", mock)
 	sort.Sort(ByRankThenSuit(mock))
+	fmt.Println("---------------------------------------------------------")
 	fmt.Println("Карты после сортировки")
 	fmt.Printf("%v\n", mock)
 	fmt.Println("---------------------------------------------------------")

@@ -55,7 +55,9 @@ type HandValue struct { // Тип комбинации, которая выпа�
 
 type User struct { // Данные о пользователе. Сейчас они предварительные
 	Id      string
-	Balance float64
+	Chips   int //Фишки игрока
 	Hand    []Card
 	WinComb HandValue
+	Bet     int //Ставка в этом раунде
+	Folded  bool
 }

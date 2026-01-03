@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -49,5 +50,6 @@ func IsFullHouse(muck []Card) (bool, HandValue) {
 	}
 	var arrFullHouse = [5]Rank{tripRank, tripRank, tripRank, pairRank, pairRank}
 
+	fmt.Printf("Max combination: FullHouse\nCards: %v\n", arrFullHouse)
 	return true, HandValue{Rank: FullHouse, Cards: arrFullHouse}
 }

@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -23,5 +24,6 @@ func IsQuads(muck []Card) (bool, HandValue) {
 	}
 
 	kicker := findMaxKicker(findPairs, rank)
+	fmt.Printf("Max combination: Quads\nCards: %v\n", []Rank{rank, rank, rank, rank, kicker})
 	return true, HandValue{Rank: Quads, Cards: [5]Rank{rank, rank, rank, rank, kicker}}
 }

@@ -11,11 +11,12 @@ import (
 //Получение колоды карт и ее перемешивание
 
 type Game struct {
-	GameId        string
-	Deck          []Card
-	Players       []User
-	Dealer        int
-	CommunityCard []Card
+	GameId             string
+	Deck               []Card
+	Players            []User
+	Dealer             string
+	CurrentPlayerIndex int
+	CommunityCard      []Card
 }
 
 func (g *Game) GetDeck() { //Генерация колоды
@@ -43,6 +44,7 @@ func (g *Game) ShuffleDeck() { //Перемешивание карт
 }
 
 func (g *Game) GiveCardToHand() { // Раздача карт по рукам
+	fmt.Println("-------------------------------------------")
 	for cycle := 0; cycle < 2; cycle++ {
 		for i := range g.Players {
 			lastIndex := len(g.Deck) - 1
@@ -57,6 +59,7 @@ func (g *Game) GiveCardToHand() { // Раздача карт по рукам
 }
 
 func (g *Game) DealBoard() { // Логика раздачи карт сжигание + раскрытие
+	fmt.Println("-------------------------------------------")
 	if len(g.CommunityCard) == 5 {
 		return
 	}
@@ -73,6 +76,7 @@ func (g *Game) DealBoard() { // Логика раздачи карт сжига�
 	default:
 		return
 	}
+	fmt.Println("-------------------------------------------")
 }
 
 func (g *Game) GetWinners() []User {
@@ -110,15 +114,18 @@ func (g *Game) GetWinners() []User {
 		}
 
 		fmt.Printf("Win combination: %v \n for user {%v} \n", g.Players[i].WinComb, g.Players[i].Id)
+		fmt.Println("-------------------------------------------")
 	}
 
 	var winners []User
 	maxRank := g.Players[0].WinComb.Rank
 
 	// Шаг 1: находим максимальный ранг комбинации
+	fmt.Println("-------------------------------------------")
 	for i := 1; i < len(g.Players); i++ {
 		if g.Players[i].WinComb.Rank > maxRank {
 			maxRank = g.Players[i].WinComb.Rank
+
 		}
 	}
 
@@ -164,5 +171,6 @@ func (g *Game) GetWinners() []User {
 		}
 	}
 
+	fmt.Printf("Winners in round: %v \n", winners)
 	return winners
 }

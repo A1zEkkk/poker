@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -42,6 +43,7 @@ func IsStreetFlush(muck []Card) (bool, HandValue) {
 	var arrStreetFlush = [5]Rank{}
 	copy(arrStreetFlush[:], maxSubSequence)
 	if isFind {
+		fmt.Printf("Max combination: StraightFlush\nCards: %v\n", arrStreetFlush)
 		return true, HandValue{Rank: StraightFlush, Cards: arrStreetFlush}
 	}
 	return false, HandValue{}

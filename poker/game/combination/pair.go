@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -38,6 +39,8 @@ func IsPair(muck []Card) (bool, HandValue) {
 			}
 		}
 	}
+
+	fmt.Printf("Max combination: Pair\nCards: pair - %v, kickers - %v %v %v\n", pair, k1, k2, k3)
 
 	return true, HandValue{
 		Rank:  Pair,

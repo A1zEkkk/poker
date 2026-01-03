@@ -24,7 +24,7 @@ type Room struct {
 	CurrentPlayers int
 	PlayersIDs     []string
 	mu             sync.Mutex
-	WSClients      map[int]*Client
+	WSClients      map[string]*websocket.Conn
 }
 
 type RoomManager struct {

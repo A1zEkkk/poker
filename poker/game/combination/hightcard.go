@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -13,5 +14,6 @@ func IsHighCard(muck []Card) (bool, HandValue) {
 		maxHightCard[i] = muck[n-1-i].Rank
 	}
 
+	fmt.Printf("Max combination: HighCard\nCards: %v\n", maxHightCard)
 	return true, HandValue{Rank: HighCard, Cards: maxHightCard}
 }

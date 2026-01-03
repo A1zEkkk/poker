@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 	"slices"
 )
@@ -48,5 +49,6 @@ func IsRoyalFlush(muck []Card) (bool, HandValue) { //Флеш рояль
 	var arr [5]Rank
 	copy(arr[:], oneSuitRank)
 
+	fmt.Printf("Max combination: royalFlush\nCards: %v\n", oneSuitRank)
 	return slices.Equal(royalFlush, oneSuitRank), HandValue{Rank: RoyalFlush, Cards: arr}
 }

@@ -2,7 +2,7 @@ package httpserver
 
 import (
 	"net/http"
-	"pokergame/server/game/http/room"
+	"pokergame/poker/server/http/room"
 )
 
 type Server struct {

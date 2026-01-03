@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -37,6 +38,7 @@ func IsTwoPair(muck []Card) (bool, HandValue) {
 		}
 	}
 	var maxTwoPair = [5]Rank{firstPair, firstPair, secondPair, secondPair, kicker}
+	fmt.Printf("Max combination: maxTwoPair\nCards: %v\n", maxTwoPair)
 	return true, HandValue{
 		Rank:  TwoPair,
 		Cards: maxTwoPair,

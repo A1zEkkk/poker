@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -33,5 +34,6 @@ func IsFlush(muck []Card) (bool, HandValue) {
 		arrFlush[i] = flush[i].Rank
 	}
 
+	fmt.Printf("Max combination: Flush\nCards: %v\n", arrFlush)
 	return true, HandValue{Rank: Flush, Cards: arrFlush}
 }

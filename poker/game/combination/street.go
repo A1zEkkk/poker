@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -20,6 +21,7 @@ func IsStreet(muck []Card) (bool, HandValue) {
 		for i := 0; i < 5; i++ {
 			arrStraight[i] = maxStreet[i].Rank
 		}
+		fmt.Printf("Max combination: Straight\nCards: %v\n", arrStraight)
 		return true, HandValue{
 			Rank:  Straight,
 			Cards: arrStraight,

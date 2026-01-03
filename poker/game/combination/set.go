@@ -1,6 +1,7 @@
 package combination
 
 import (
+	"fmt"
 	. "pokergame/poker/game/types"
 )
 
@@ -42,6 +43,7 @@ func IsSet(muck []Card) (bool, HandValue) {
 		maxKicker1, maxKicker2,
 	}
 
+	fmt.Printf("Max combination: Set\nCards: %v\n", arrSet)
 	return true, HandValue{
 		Rank:  Set,
 		Cards: arrSet,
