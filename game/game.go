@@ -3,8 +3,8 @@ package game
 import (
 	"fmt"
 	"math/rand"
-	. "pokergame/poker/game/combination"
-	. "pokergame/poker/game/types"
+	. "poker/game/combination"
+	. "poker/game/types"
 	"time"
 )
 
@@ -154,19 +154,19 @@ func (g *Game) GetWinners() []User {
 		equal := true
 		for j := 0; j < len(p.WinComb.Cards); j++ {
 			if p.WinComb.Cards[j] > winners[0].WinComb.Cards[j] {
-				// Новый игрок сильнее — заменяем всех
+				// Новый игрок сильнее - заменяем всех
 				winners = []User{p}
 				equal = false
 				break
 			} else if p.WinComb.Cards[j] < winners[0].WinComb.Cards[j] {
-				// Новый игрок слабее — пропускаем
+				// Новый игрок слабее - пропускаем
 				equal = false
 				break
 			}
 		}
 
 		if equal {
-			// Киккеры одинаковые — добавляем в список
+			// Киккеры одинаковые - добавляем в список
 			winners = append(winners, p)
 		}
 	}

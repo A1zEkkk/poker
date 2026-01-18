@@ -1,7 +1,7 @@
 package combination
 
 import (
-	. "pokergame/poker/game/types"
+	. "poker/game/types"
 	"sort"
 )
 

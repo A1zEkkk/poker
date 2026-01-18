@@ -2,7 +2,7 @@ package combination
 
 import (
 	"fmt"
-	. "pokergame/poker/game/types"
+	. "poker/game/types"
 )
 
 func IsStreetFlush(muck []Card) (bool, HandValue) {

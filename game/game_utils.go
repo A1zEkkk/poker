@@ -2,7 +2,7 @@ package game
 
 import (
 	"fmt"
-	. "pokergame/poker/game/types"
+	. "poker/game/types"
 	"sort"
 )
 

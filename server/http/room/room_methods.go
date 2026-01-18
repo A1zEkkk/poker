@@ -2,8 +2,8 @@ package room
 
 import (
 	"fmt"
-	"pokergame/poker/game"
-	"pokergame/poker/game/types"
+	"poker/game"
+	"poker/game/types"
 	"sync"
 
 	"github.com/google/uuid"
