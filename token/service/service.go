@@ -1,17 +1,14 @@
 package service
 
 import (
-	"errors"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"time"
 
 	"poker/config"
 
-	"crypto/sha256"
-	"encoding/hex"
-
 	"github.com/golang-jwt/jwt"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type JWTService struct {
@@ -104,38 +101,38 @@ func (s *JWTService) VerifyJWTToken(tokenString string, expectedType TokenType) 
 	return claims, nil
 }
 
-func HashToken(token string) string {
-	sum := sha256.Sum256([]byte(token))
-	return hex.EncodeToString(sum[:])
+// HashToken делает SHA-256 хеш токена
+func (s *JWTService) HashToken(token string) (string, error) {
+	hash := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(hash[:]), nil
 }
 
-func checkHashToken(hashedToken, plainToken string) error { //Сервисаная функция, которая используется в Validate
-	err := bcrypt.CompareHashAndPassword([]byte(hashedToken), []byte(plainToken))
-	if err != nil {
-		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return InvalidToken
-		}
-		return ErrorVerifyingToken
+// checkHashToken проверяет plain-токен с хешем
+func checkHashToken(hashedToken, plainToken string) (string, error) {
+	hash := sha256.Sum256([]byte(plainToken))
+	hashStr := hex.EncodeToString(hash[:])
+
+	if hashStr != hashedToken {
+		return "", InvalidToken
 	}
-	return nil
+
+	return hashedToken, nil
 }
 
-func ValidateRefreshToken(plainToken string, dataHash []string) error {
+// ValidateRefreshToken проверяет, что plainToken соответствует хотя бы одному хешу из dataHash
+func (s *JWTService) ValidateRefreshToken(plainToken string, dataHash []string) (string, error) {
 	for _, hash := range dataHash {
-		err := checkHashToken(hash, plainToken)
-
+		hashedToken, err := checkHashToken(hash, plainToken)
 		if err == nil {
-			// токен валиден
-			return nil
+			return hashedToken, nil // токен валиден
 		}
 
 		if err == InvalidToken {
-			continue
+			continue // пробуем следующий хеш
 		}
 
-		// любая другая ошибка
-		return err
+		return "", err // любая другая ошибка
 	}
 
-	return fmt.Errorf("refresh token не найден или отозван")
+	return "", InvalidToken
 }

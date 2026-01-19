@@ -14,6 +14,11 @@ func HashPassword(password string) (string, error) { // Хэширование �
 	return string(hash), nil
 }
 
+func CheckPasswordHash(hash, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+}
+
+// Пофиксить ввод. сделать только латинский
 func IsCorrectLogin(login string) error { //Проверка того, что логин прошел проверку. Я думаю скоро можно будет cfg сделать, где будут вводиться список исключений
 	r := []rune(login)
 	if len(r) < 8 {

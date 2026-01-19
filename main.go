@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	ar "poker/auth/repository"
@@ -62,6 +63,81 @@ func main() {
 				return
 			}
 			http.Error(w, err.Error(), http.StatusBadRequest) // 400
+			return
+		}
+
+		// Формируем JSON-ответ
+		resp := map[string]string{
+			"access":  access,
+			"refresh": refresh,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
+	})
+	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var login, password string
+
+		// Читаем JSON или form-data
+		if r.Header.Get("Content-Type") == "application/json" {
+			var req struct {
+				Login    string `json:"login"`
+				Password string `json:"password"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+				return
+			}
+			login = req.Login
+			password = req.Password
+		} else {
+			login = r.FormValue("login")
+			password = r.FormValue("password")
+		}
+
+		// Вызываем сервис авторизации
+		access, refresh, _ := authService.LoginUser(login, password)
+
+		// Формируем JSON-ответ
+		resp := map[string]string{
+			"access":  access,
+			"refresh": refresh,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
+	})
+	http.HandleFunc("/refresh", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var refreshToken string
+
+		// Читаем JSON или form-data
+		if r.Header.Get("Content-Type") == "application/json" {
+			var req struct {
+				RefreshToken string `json:"refresh"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+				return
+			}
+			refreshToken = req.RefreshToken
+		} else {
+			refreshToken = r.FormValue("refresh")
+		}
+
+		// Вызываем сервис обновления токена
+		access, refresh, err := authService.RefreshRefreshToken(refreshToken)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to refresh token: %v", err), http.StatusUnauthorized)
 			return
 		}
 
