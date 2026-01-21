@@ -69,3 +69,13 @@ func (r *TokenRepository) InsertRefreshToken(userId int, hashToken string) error
 
 	return err
 }
+
+func (r *TokenRepository) RevokeAllRefreshTokenById(userId int) error { // Отключение всех токенов по id
+	_, err := r.DB.Postgres.Exec(`
+	update refresh_tokens
+	set revoked = true
+	where user_id = $1
+	`, userId)
+
+	return err
+}
