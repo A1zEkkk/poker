@@ -14,7 +14,7 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, refreshToken, err := ah.AuthService.LoginUser(req.Login, req.Password)
+	accessToken, refreshToken, err := ah.AuthService.RegisterUser(req.Login, req.Password)
 	if err != nil {
 		//handleAuthError(w, err)
 		//return
