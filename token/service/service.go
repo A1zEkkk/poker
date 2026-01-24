@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	er "poker/token/error"
 	"time"
 
 	"poker/config"
@@ -48,11 +49,16 @@ func (s *JWTService) GetJWTToken(subject TokenSubject, t TokenType) (string, err
 		claims["exp"] = time.Now().Add(s.cfg.RefreshTTL).Unix()
 
 	default:
-		return "", InvalidTokenType
+		return "", er.ErrInvalidToken
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(s.cfg.JwtSecret))
+	signed, err := token.SignedString([]byte(s.cfg.JwtSecret))
+	if err != nil {
+		return "", fmt.Errorf("sign jwt: %w", er.ErrTokenInternal)
+	}
+
+	return signed, nil
 
 }
 
@@ -66,35 +72,35 @@ func (s *JWTService) VerifyJWTToken(tokenString string, expectedType TokenType) 
 		return []byte(s.cfg.JwtSecret), nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse token: %w", err)
+		return nil, er.ErrInvalidToken
 	}
 
 	// Проверяем, что claims типа MapClaims
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok || !token.Valid {
-		return nil, InvalidToken
+		return nil, er.ErrInvalidToken
 	}
 
 	typ, ok := claims["typ"].(string)
 	if !ok {
-		return nil, TokenTypeMissing
+		return nil, er.ErrWrongTokenType
 	}
 	switch expectedType {
 	case AccessToken:
 		if typ != "access" {
-			return nil, ExpectedAccessToken
+			return nil, fmt.Errorf("access %w", er.ErrTokenExpired)
 		}
 	case RefreshToken:
 		if typ != "refresh" {
-			return nil, ExpectedRefreshToken
+			return nil, fmt.Errorf("refresh %w", er.ErrTokenExpired)
 		}
 	}
 
 	// Проверка exp (опционально — jwt.MapClaims.Valid делает это автоматически)
 	if exp, ok := claims["exp"].(float64); ok {
 		if time.Now().Unix() > int64(exp) {
-			return nil, TokenExpired
+			return nil, er.ErrTokenExpired
 		}
 	}
 
@@ -113,7 +119,7 @@ func checkHashToken(hashedToken, plainToken string) (string, error) {
 	hashStr := hex.EncodeToString(hash[:])
 
 	if hashStr != hashedToken {
-		return "", InvalidToken
+		return "", er.ErrInvalidToken
 	}
 
 	return hashedToken, nil
@@ -127,12 +133,12 @@ func (s *JWTService) ValidateRefreshToken(plainToken string, dataHash []string) 
 			return hashedToken, nil // токен валиден
 		}
 
-		if err == InvalidToken {
+		if err == er.ErrInvalidToken {
 			continue // пробуем следующий хеш
 		}
 
 		return "", err // любая другая ошибка
 	}
 
-	return "", InvalidToken
+	return "", er.ErrTokenNotFound
 }

@@ -16,8 +16,8 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	accessToken, refreshToken, err := ah.AuthService.LoginUser(req.Login, req.Password)
 	if err != nil {
-		//handleAuthError(w, err)
-		//return
+		handleLoginError(w, err)
+		return
 	}
 
 	res := AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken}

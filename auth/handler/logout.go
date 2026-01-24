@@ -15,8 +15,8 @@ func (ah *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 
 	err = ah.AuthService.Logout(refreshTokenCookie.Value)
 	if err != nil {
-		//handleAuthError(w, err)
-		//return
+		handleLogoutError(w, err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

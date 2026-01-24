@@ -15,8 +15,8 @@ func (ah *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 
 	accessToken, refreshToken, err := ah.AuthService.RefreshRefreshToken(refreshTokenCookie.Value)
 	if err != nil {
-		//handleAuthError(w, err)
-		//return
+		handleRefreshError(w, err)
+		return
 	}
 
 	res := AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken}

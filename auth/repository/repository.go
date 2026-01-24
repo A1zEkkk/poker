@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	er "poker/auth/error"
 	"poker/database"
 )
 
@@ -22,9 +24,9 @@ func (r *UserRepository) InsertNewUser(login, hashedPassord string) error { // �
 	`, login, hashedPassord)
 	if err != nil {
 		if isUniqueViolation(err) {
-			return ErrLoginAlreadyExists
+			return er.ErrLoginAlreadyExists
 		}
-		return err
+		return fmt.Errorf("insert user: %w", er.ErrRepoInternal)
 	}
 
 	return nil
@@ -37,9 +39,9 @@ func (r *UserRepository) GetUserByLogin(login string) (*User, error) { // Поу
 	where login = $1;`, login).Scan(&user.ID, &user.Uuid, &user.Login, &user.HashPassword)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrUserNotFound // Наша ошибка
+			return nil, er.ErrUserNotFound // Наша ошибка
 		}
-		return nil, err
+		return nil, fmt.Errorf("get user by login: %w", er.ErrRepoInternal)
 	}
 
 	return &user, nil
@@ -52,9 +54,9 @@ func (r *UserRepository) GetUserById(id int64) (*User, error) {
 	where id = $1;`, id).Scan(&user.ID, &user.Uuid, &user.Login, &user.HashPassword)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrUserNotFound // Наша ошибка
+			return nil, er.ErrUserNotFound // Наша ошибка
 		}
-		return nil, err
+		return nil, fmt.Errorf("get user by login: %w", er.ErrRepoInternal)
 	}
 
 	return &user, nil

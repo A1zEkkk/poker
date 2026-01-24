@@ -14,9 +14,6 @@ func isUniqueViolation(err error) bool { // Функция проверки, ч�
 	return false
 }
 
-var ErrLoginAlreadyExists = errors.New("login already exists") //Пользователь существует
-var ErrUserNotFound = errors.New("User not found")             //Пользователь не существует
-
 type User struct {
 	ID           int64
 	Login        string

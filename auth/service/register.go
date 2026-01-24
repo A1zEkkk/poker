@@ -2,7 +2,7 @@ package service
 
 import (
 	validator "poker/auth/credentials/service"
-	userRepo "poker/auth/repository"
+	er "poker/auth/error"
 	tokenSer "poker/token/service"
 )
 
@@ -20,8 +20,8 @@ func (as *AuthService) RegisterUser(login, password string) (string, string, err
 	switch {
 	case err == nil:
 		// Пользователь уже существует
-		return "", "", userRepo.ErrLoginAlreadyExists
-	case err != userRepo.ErrUserNotFound:
+		return "", "", er.ErrLoginAlreadyExists
+	case err != er.ErrUserNotFound:
 		// Какая-то другая ошибка базы данных
 		return "", "", err
 		// ничего не делаем, продолжаем регистрацию

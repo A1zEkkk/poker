@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/golang-jwt/jwt"
@@ -34,8 +33,3 @@ func (a AccessTokenSubject) Subject() string {
 func (a AccessTokenSubject) Claims() jwt.MapClaims {
 	return jwt.MapClaims{}
 }
-
-var (
-	InvalidSubInToken  = errors.New("invalid sub in token")
-	InvalidTypeInToken = errors.New("invalid ID type in token")
-)

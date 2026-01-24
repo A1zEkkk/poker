@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	er "poker/auth/error"
 	types "poker/token/service"
 	"strconv"
 )
@@ -16,13 +17,13 @@ func (as *AuthService) Logout(refreshToken string) error {
 	subStr, ok := claims["sub"].(string)
 	if !ok {
 		fmt.Println("2")
-		return InvalidSubInToken
+		return er.InvalidSubInToken
 	}
 
 	id, err := strconv.ParseInt(subStr, 10, 64)
 	if err != nil {
 		fmt.Println("3")
-		return InvalidTypeInToken
+		return er.InvalidTypeInToken
 	}
 
 	// Получаем список валидных refresh токенов из БД

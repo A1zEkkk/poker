@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	er "poker/auth/error"
 	types "poker/token/service"
 	"strconv"
 )
@@ -16,12 +17,12 @@ func (as *AuthService) RefreshRefreshToken(refreshToken string) (string, string,
 	// Извлекаем ID из sub
 	subStr, ok := claims["sub"].(string)
 	if !ok {
-		return "", "", InvalidSubInToken
+		return "", "", er.InvalidSubInToken
 	}
 
 	id, err := strconv.ParseInt(subStr, 10, 64)
 	if err != nil {
-		return "", "", InvalidTypeInToken
+		return "", "", er.InvalidTypeInToken
 	}
 
 	// Получаем login пользователя по ID из БД

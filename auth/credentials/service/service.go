@@ -1,32 +1,42 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"unicode"
 
 	"golang.org/x/crypto/bcrypt"
+
+	er "poker/auth/error"
 )
 
 func HashPassword(password string) (string, error) { // Хэширование пароля
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("hash password: %w", er.ErrInternal)
 	}
 	return string(hash), nil
 }
 
 func CheckPasswordHash(hash, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return er.ErrInvalidPassword // доменная ошибка
+	} else if err != nil {
+		return fmt.Errorf("compare password: %w", er.ErrInternal) // техническая
+	}
+	return nil
 }
 
 // Пофиксить ввод. сделать только латинский
 func IsCorrectLogin(login string) error { //Проверка того, что логин прошел проверку. Я думаю скоро можно будет cfg сделать, где будут вводиться список исключений
 	r := []rune(login)
 	if len(r) < 8 {
-		return IncorrectLenght
+		return er.IncorrectLenght
 	}
 	for _, i := range r {
 		if !(unicode.IsDigit(i) || unicode.IsLetter(i)) {
-			return IncorrectFormat
+			return er.IncorrectFormat
 		}
 	}
 	return nil
@@ -35,7 +45,7 @@ func IsCorrectLogin(login string) error { //Проверка того, что л
 func IsCorrectPassword(password string) error { // проверка корректного пароля
 	r := []rune(password)
 	if len(r) < 8 {
-		return IncorrectLenght
+		return er.IncorrectLenght
 	}
 	var hasDigit, hasUpperLetter, hasLowerLetter, hasSpecial bool
 	total := 0
@@ -56,7 +66,7 @@ func IsCorrectPassword(password string) error { // проверка коррек
 	}
 
 	if !(hasDigit && hasUpperLetter && hasLowerLetter && hasSpecial) {
-		return IncorrectFormat
+		return er.IncorrectFormat
 	}
 
 	return nil

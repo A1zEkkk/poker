@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"fmt"
 	"poker/config"
 	"poker/database"
+	er "poker/token/error"
 	"time"
 )
 
@@ -30,7 +32,7 @@ func (r *TokenRepository) GetValidRefreshTokens(userID int) ([]string, error) { 
 `, userID)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("query refresh tokemns : %w", er.ErrRepoInternal)
 	}
 	defer rows.Close()
 
@@ -38,14 +40,18 @@ func (r *TokenRepository) GetValidRefreshTokens(userID int) ([]string, error) { 
 	for rows.Next() { //Запускаем цикл т.е перебираем наши строки
 		var tokenHash string
 		if err := rows.Scan(&tokenHash); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("scan refresh token: %w", er.ErrRepoInternal)
 		}
 		tokenHashes = append(tokenHashes, tokenHash)
 
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("rows error: %w", er.ErrRepoInternal)
+	}
+
+	if len(tokenHashes) == 0 {
+		return nil, er.ErrTokenNotFound
 	}
 
 	return tokenHashes, nil
@@ -58,7 +64,10 @@ func (r *TokenRepository) RevokeRefreshToken(tokenHash string) error { // Отк
 		SET revoked = true
 		WHERE hash_token = $1`, tokenHash)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("error: %w", er.ErrRepoInternal)
+	}
+	return nil
 }
 
 func (r *TokenRepository) InsertRefreshToken(userId int, hashToken string) error { // Добавления токена
@@ -67,7 +76,10 @@ func (r *TokenRepository) InsertRefreshToken(userId int, hashToken string) error
 		insert into refresh_tokens(user_id, hash_token, expires_at)
 		values ($1, $2, $3)`, userId, hashToken, expiresAt)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("error: %w", er.ErrRepoInternal)
+	}
+	return nil
 }
 
 func (r *TokenRepository) RevokeAllRefreshTokenById(userId int) error { // Отключение всех токенов по id
@@ -77,5 +89,8 @@ func (r *TokenRepository) RevokeAllRefreshTokenById(userId int) error { // От�
 	where user_id = $1
 	`, userId)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("error: %w", er.ErrRepoInternal)
+	}
+	return nil
 }
