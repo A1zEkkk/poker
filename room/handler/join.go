@@ -3,43 +3,39 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	typ "poker/token/service"
-	"strings"
 )
 
 func (h *Handler) JoinRoom(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
-		return
-	}
-
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-	claims, err := h.tokenService.VerifyJWTToken(tokenString, typ.AccessToken)
-	if err != nil {
-		http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
-		return
-	}
-
-	userUUID, ok := claims["uuid"].(string)
-	if !ok {
-		http.Error(w, "UUID not found in token", http.StatusForbidden)
-		return
-	}
-	// Далее наш рум менеджер с подключением
-
-	var req JoinRoomRequest
+	var req RoomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
 
-	_, err = h.roomManager.JoinRoom(req.RoomID, userUUID, req.Bank)
+	if req.RoomID == "" || req.Bank <= 0 {
+		http.Error(w, "invalid room_id or bank", http.StatusBadRequest)
+		return
+	}
+
+	userID, ok := r.Context().Value("userID").(string)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	room, err := h.roomManager.JoinRoom(req.RoomID, userID, req.Bank)
 	if err != nil {
-		http.Error(w, "Failed to join room: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Joined successfully"))
+	resp := map[string]any{
+		"room_id": room.ID,
+		"host_id": room.HostID,
+		"players": len(room.Players),
+		"state":   room.State,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }

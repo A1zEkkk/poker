@@ -9,6 +9,9 @@ import (
 	as "poker/auth/service"
 	"poker/config"
 	"poker/database"
+	r "poker/room"
+	rh "poker/room/handler"
+	rm "poker/room/roommanager"
 	tr "poker/token/repository"
 	ts "poker/token/service"
 
@@ -31,9 +34,13 @@ func main() {
 	userRepo := ar.NewUserRepository(db)
 	authService := as.NewAuthService(userRepo, tokenRepo, tokenSer)
 	authHandler := handler.NewAuthHandler(authService)
+	roomManager := rm.NewRoomManager()
+
+	roomHandler := rh.NewRoomHandler(roomManager)
 	root := chi.NewRouter()
 
 	root.Mount("/auth", arout.AuthRouter(authHandler))
+	root.Mount("/room", r.RoomRouter(roomHandler, authService))
 
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", root))
