@@ -2,13 +2,15 @@ package handler
 
 import (
 	"poker/room/roommanager"
+	token "poker/token/service"
 )
 
 type Handler struct {
-	roomManager *roommanager.RoomManager
+	roomManager  *roommanager.RoomManager
+	tokenService *token.JWTService
 }
 
-func NewHandler(rm *roommanager.RoomManager) *Handler {
+func NewRoomHandler(rm *roommanager.RoomManager) *Handler {
 	return &Handler{
 		roomManager: rm,
 	}

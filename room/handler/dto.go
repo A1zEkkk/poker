@@ -28,3 +28,8 @@ func RoomToInfoResponse(r *roommanager.Room) RoomInfoResponse {
 		PlayerIDs:  playerIDs,
 	}
 }
+
+type JoinRoomRequest struct {
+	RoomID string  `json:"room_id"`
+	Bank   float64 `json:"bank"`
+}

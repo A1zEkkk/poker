@@ -3,6 +3,7 @@ package service
 import (
 	validator "poker/auth/credentials/service"
 	er "poker/auth/error"
+	token "poker/token"
 	tokenSer "poker/token/service"
 )
 
@@ -40,12 +41,12 @@ func (as *AuthService) RegisterUser(login, password string) (string, string, err
 		return "", "", err
 	}
 
-	refresh, err := as.TokenService.GetJWTToken(RefreshTokenSubject{ID: user.ID, Login: user.Login}, tokenSer.RefreshToken)
+	refresh, err := as.TokenService.GetJWTToken(token.RefreshTokenSubject{ID: user.ID, Login: user.Login}, tokenSer.RefreshToken)
 	if err != nil {
 		return "", "", err
 	}
 
-	access, err := as.TokenService.GetJWTToken(AccessTokenSubject{ID: user.ID}, tokenSer.AccessToken)
+	access, err := as.TokenService.GetJWTToken(token.AccessTokenSubject{ID: user.ID, UUID: user.Uuid}, tokenSer.AccessToken)
 	if err != nil {
 		return "", "", err
 	}

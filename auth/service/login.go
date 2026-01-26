@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	. "poker/auth/credentials/service"
+	token "poker/token"
 	tokenSer "poker/token/service"
 )
 
@@ -31,13 +32,13 @@ func (as *AuthService) LoginUser(login, password string) (string, string, error)
 		fmt.Printf("CheckPasswordHash(%v, %s)", user.HashPassword, password)
 		return "", "", err
 	}
-	refresh, err := as.TokenService.GetJWTToken(RefreshTokenSubject{ID: user.ID, Login: user.Login}, tokenSer.RefreshToken)
+	refresh, err := as.TokenService.GetJWTToken(token.RefreshTokenSubject{ID: user.ID, Login: user.Login}, tokenSer.RefreshToken)
 	if err != nil {
 		println("as.TokenService.GetJWTToken(RefreshTokenSubject{ID: user.ID, Login: user.Login}, tokenSer.RefreshToken)")
 		return "", "", err
 	}
 
-	access, err := as.TokenService.GetJWTToken(AccessTokenSubject{ID: user.ID}, tokenSer.AccessToken)
+	access, err := as.TokenService.GetJWTToken(token.AccessTokenSubject{ID: user.ID, UUID: user.Uuid}, tokenSer.AccessToken)
 	if err != nil {
 		println("as.TokenService.GetJWTToken(AccessTokenSubject{ID: user.ID}, tokenSer.AccessToken)")
 		return "", "", err

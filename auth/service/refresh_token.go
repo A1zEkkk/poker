@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	er "poker/auth/error"
+	token "poker/token"
 	types "poker/token/service"
 	"strconv"
 )
@@ -51,7 +52,7 @@ func (as *AuthService) RefreshRefreshToken(refreshToken string) (string, string,
 
 	// Генерируем новый refresh token
 	newRefresh, err := as.TokenService.GetJWTToken(
-		RefreshTokenSubject{ID: id, Login: login},
+		token.RefreshTokenSubject{ID: id, Login: login},
 		types.RefreshToken,
 	)
 	if err != nil {
@@ -60,7 +61,7 @@ func (as *AuthService) RefreshRefreshToken(refreshToken string) (string, string,
 
 	// Генерируем access token
 	access, err := as.TokenService.GetJWTToken(
-		AccessTokenSubject{ID: id},
+		token.AccessTokenSubject{ID: user.ID, UUID: user.Uuid},
 		types.AccessToken,
 	)
 	if err != nil {
